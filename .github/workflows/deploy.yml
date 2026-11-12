@@ -1,0 +1,61 @@
+# Deploy to your own Cloudflare account from GitHub (manual run).
+# 1. Fork / "Use this template" so you have your own copy of the repository.
+# 2. Settings → Secrets and variables → Actions → New repository secret:
+#      CLOUDFLARE_API_TOKEN   (required) token with Account › Workers Scripts: Edit and Account › D1: Edit
+#      CLOUDFLARE_ACCOUNT_ID  (required) your account id (dashboard → Workers & Pages → right sidebar)
+#      SETUP_TOKEN            (recommended) ≥ 12 characters; you type it once in the dashboard to create the admin password
+#      ADMIN_PASSWORD_HASH    (optional) output of `npm run hash-password` — skips first-run setup
+#      ENCRYPTION_KEY, SESSION_SECRET (optional) your own ≥ 32-char passphrases; otherwise random ones are generated on the first run
+# 3. Actions → "Deploy to Cloudflare" → Run workflow.
+# Re-running is safe: the D1 database is reused, migrations are applied, existing secrets are never overwritten
+# (except SETUP_TOKEN / ADMIN_PASSWORD_HASH when you provide them), and no secret is ever printed.
+name: Deploy to Cloudflare
+
+on:
+  workflow_dispatch:
+    inputs:
+      worker_name:
+        description: Worker name (also the first part of the workers.dev URL)
+        required: false
+        default: cf-ssh-mcp
+      db_name:
+        description: D1 database name
+        required: false
+        default: cf-ssh-mcp-db
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-${{ inputs.worker_name }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install (also patches ssh2 for Workers)
+        run: npm ci
+      - name: Build check
+        run: npm run build
+      - name: Deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          SETUP_TOKEN: ${{ secrets.SETUP_TOKEN }}
+          ADMIN_PASSWORD_HASH: ${{ secrets.ADMIN_PASSWORD_HASH }}
+          ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
+          WORKER_NAME: ${{ inputs.worker_name }}
+          DB_NAME: ${{ inputs.db_name }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::Add the CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID repository secrets first."; exit 1
+          fi
+          bash scripts/deploy.sh

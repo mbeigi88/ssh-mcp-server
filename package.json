@@ -1,0 +1,72 @@
+{
+  "name": "cf-ssh-mcp",
+  "version": "1.0.0",
+  "description": "SSH MCP server + web dashboard on a single Cloudflare Worker (real SSH over cloudflare:sockets).",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/robamad1396-dev/cf-ssh-mcp"
+  },
+  "scripts": {
+    "postinstall": "node scripts/patch-ssh2.mjs",
+    "build": "node scripts/check-dashboard.mjs",
+    "dev": "wrangler dev",
+    "deploy": "npm run db:migrate && wrangler deploy",
+    "db:migrate": "wrangler d1 migrations apply DB --remote",
+    "db:migrate:local": "wrangler d1 migrations apply DB --local",
+    "deploy:full": "bash scripts/deploy.sh",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --project unit && vitest run --project worker",
+    "test:unit": "vitest run --project unit",
+    "test:worker": "vitest run --project worker",
+    "test:integration": "bash test/sshd/setup.sh && bash test/sshd/start.sh && vitest run --project integration",
+    "test:all": "vitest run --project unit && vitest run --project worker && bash test/sshd/setup.sh && bash test/sshd/start.sh && vitest run --project integration",
+    "test:e2e": "node test/e2e/dashboard.e2e.mjs",
+    "check": "npm run typecheck && npm run test:all && npm run build && wrangler deploy --dry-run --outdir dist",
+    "hash-password": "node scripts/hash-password.mjs"
+  },
+  "cloudflare": {
+    "bindings": {
+      "ENCRYPTION_KEY": {
+        "description": "Encrypts the SSH passwords and keys you store. Type **any passphrase of at least 32 characters** (for example six random words) or paste the output of `openssl rand -base64 32`. Keep a copy somewhere safe and **never change it after adding servers** — stored credentials could no longer be decrypted."
+      },
+      "SESSION_SECRET": {
+        "description": "Signs dashboard login sessions. Type **any passphrase of at least 32 characters** that is different from ENCRYPTION_KEY (or `openssl rand -base64 48`). Changing it later only logs you out."
+      },
+      "SETUP_TOKEN": {
+        "description": "One-time **setup token, at least 12 characters**, that only you know. After deploying, open the Worker URL: the dashboard asks for this token once to create your admin password, so nobody else can claim your fresh deployment."
+      },
+      "DB": {
+        "description": "D1 database for servers, settings, MCP tokens and the audit log (created automatically; migrations run in the deploy command)."
+      },
+      "SSH_SESSION": {
+        "description": "Durable Object holding one live SSH/SFTP connection per server."
+      },
+      "MCP_SESSION": {
+        "description": "Durable Object holding one MCP (Streamable HTTP) session."
+      },
+      "AUTH_MODE": {
+        "description": "`password` (default). Use `access` or `both` only together with Cloudflare Access (ACCESS_TEAM_DOMAIN + ACCESS_AUD)."
+      }
+    }
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "@noble/curves": "^2.4.0",
+    "hono": "^4.13.17",
+    "ssh2": "^1.17.0",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-plugin": "^1.7.0",
+    "@cloudflare/workers-types": "^5.20261110.1",
+    "@types/node": "^26.6.6",
+    "@types/ssh2": "^1.15.6",
+    "puppeteer-core": "^25.17.0",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.12",
+    "wrangler": "^4.160.0"
+  }
+}

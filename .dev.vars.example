@@ -1,0 +1,6 @@
+# Secrets for the Worker. The "Deploy to Cloudflare" button asks for each of these (descriptions are in
+# package.json -> cloudflare.bindings). For local `wrangler dev`, copy this file to .dev.vars and fill it in.
+# Every value may be a long passphrase (e.g. six random words); no special format is required.
+ENCRYPTION_KEY= # at least 32 characters; encrypts stored SSH credentials. Never change it after adding servers.
+SESSION_SECRET= # at least 32 characters; signs dashboard sessions.
+SETUP_TOKEN= # at least 12 characters; you type it once in the dashboard to create the admin password.

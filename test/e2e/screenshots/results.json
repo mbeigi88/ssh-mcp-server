@@ -1,0 +1,94 @@
+[
+  [
+    "PASS",
+    "first-run setup page: shown instead of login, wrong token rejected, fa toggle, create password"
+  ],
+  [
+    "PASS",
+    "login page renders and login works"
+  ],
+  [
+    "PASS",
+    "add server via form"
+  ],
+  [
+    "PASS",
+    "TOFU: connect shows fingerprint, approve, test ok"
+  ],
+  [
+    "PASS",
+    "edit form never shows secrets"
+  ],
+  [
+    "PASS",
+    "terminal runs a real command with separated stderr and exit code"
+  ],
+  [
+    "PASS",
+    "terminal destructive command shows confirmation dialog"
+  ],
+  [
+    "PASS",
+    "terminal cancel stops a long command"
+  ],
+  [
+    "PASS",
+    "terminal quick-command chips and history sheet"
+  ],
+  [
+    "PASS",
+    "file manager: browse, mkdir, upload, open/edit, rename, grid, delete"
+  ],
+  [
+    "PASS",
+    "MCP page: URL, token creation, Claude steps, config snippets"
+  ],
+  [
+    "PASS",
+    "settings, audit and approvals pages render"
+  ],
+  [
+    "PASS",
+    "1440 en: auto-approve quick switch, one-tap approve, approve all, Auto badge"
+  ],
+  [
+    "PASS",
+    "sidebar collapses and expands"
+  ],
+  [
+    "PASS",
+    "desktop 1440 en: every view without horizontal overflow"
+  ],
+  [
+    "PASS",
+    "Persian RTL toggle (desktop 1440 fa) + bidi isolation + overflow"
+  ],
+  [
+    "PASS",
+    "phone 390x844 fa: bottom nav, sheets, no overflow on any view"
+  ],
+  [
+    "PASS",
+    "390x844 fa: auto-approve control in the server sheet + approve all"
+  ],
+  [
+    "PASS",
+    "settings explains that a secret-based admin password is changed outside the dashboard"
+  ],
+  [
+    "PASS",
+    "phone 390x844 en: no overflow + bottom nav"
+  ],
+  [
+    "PASS",
+    "English is the default even for a fa browser; Persian via toggle (fresh profile)"
+  ],
+  [
+    "PASS",
+    "logout"
+  ],
+  [
+    "PASS",
+    "no console errors / CSP violations"
+  ]
+]
