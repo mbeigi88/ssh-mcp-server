@@ -272,7 +272,9 @@ function redirectWith(uri: string, params: Record<string, string | undefined>): 
 function setFormAction(c: C, redirectUri: string) {
   try {
     const u = new URL(redirectUri);
-    const src = u.protocol === 'https:' || u.protocol === 'http:' ? u.origin : u.protocol;
+    // Browsers check form-action on every hop of the redirect chain (the client's callback
+    // often redirects again, e.g. Google's oauth-redirect host), so allow any https target.
+    const src = u.protocol === 'https:' ? 'https:' : u.protocol === 'http:' ? u.origin : u.protocol;
     c.set('cspFormAction' as never, src as never);
   } catch {
     /* ignore */
@@ -463,6 +465,7 @@ oauth.post('/oauth/token', async (c) => {
   if (!rl.ok) return oauthError(c, 'slow_down', 'too many token requests', 429);
   const f = await readForm(c);
   const client = await authenticateClient(c, f);
+  if (!client) console.log('oauth token fail', { reason: 'client_auth', id: f.client_id, basic: !!c.req.header('authorization'), hasSecret: !!f.client_secret, ct: c.req.header('content-type') });
   if (!client) return oauthError(c, 'invalid_client', 'client authentication failed', 401, { 'www-authenticate': 'Basic realm="cf-ssh-mcp"' });
 
   if (f.grant_type === 'authorization_code') {
@@ -470,13 +473,21 @@ oauth.post('/oauth/token', async (c) => {
     const row = await c.env.DB.prepare('DELETE FROM oauth_codes WHERE code_hash = ? RETURNING client_id, redirect_uri, code_challenge, grant_id, expires_at')
       .bind(await sha256Hex(f.code))
       .first<{ client_id: string; redirect_uri: string; code_challenge: string; grant_id: string; expires_at: number }>();
-    if (!row || row.expires_at < Date.now() || row.client_id !== client.client_id) return oauthError(c, 'invalid_grant', 'authorization code is invalid or expired');
-    if (f.redirect_uri && f.redirect_uri !== row.redirect_uri) return oauthError(c, 'invalid_grant', 'redirect_uri mismatch');
+    if (!row || row.expires_at < Date.now() || row.client_id !== client.client_id) {
+      console.log('oauth token fail', { reason: !row ? 'no_code' : row.expires_at < Date.now() ? 'expired' : 'client_mismatch', client: client.client_id, codeClient: row?.client_id });
+      return oauthError(c, 'invalid_grant', 'authorization code is invalid or expired');
+    }
+    if (f.redirect_uri && f.redirect_uri !== row.redirect_uri && !redirectMatches(JSON.parse(client.redirect_uris), f.redirect_uri)) {
+      console.log('oauth token fail', { reason: 'redirect_mismatch', got: f.redirect_uri, want: row.redirect_uri });
+      return oauthError(c, 'invalid_grant', 'redirect_uri mismatch');
+    }
     if (!/^[A-Za-z0-9._~-]{43,128}$/.test(f.code_verifier) || !timingSafeEqualStr(await s256(f.code_verifier), row.code_challenge)) {
       await c.env.DB.prepare('UPDATE oauth_grants SET revoked_at = ? WHERE id = ?').bind(Date.now(), row.grant_id).run();
+      console.log('oauth token fail', { reason: 'pkce', verifierLen: f.code_verifier.length });
       return oauthError(c, 'invalid_grant', 'PKCE verification failed');
     }
     await c.env.DB.prepare('UPDATE oauth_clients SET last_used_at = ? WHERE client_id = ?').bind(Date.now(), client.client_id).run();
+    console.log('oauth token ok', { client: client.client_id });
     return json(c, await issueTokens(c.env, row.grant_id));
   }
 
