@@ -11,7 +11,7 @@ export const JS = String.raw`
 const I18N = {
  en: {overview:'Overview',servers:'Servers',terminal:'Terminal',files:'Files',approvals:'Approvals',mcp:'MCP',settings:'Settings',audit:'Audit log',logout:'Log out',
   sub_overview:'Your fleet at a glance',sub_servers:'Manage SSH targets, host keys and policies',sub_terminal:'Run commands over SSH',sub_files:'Browse and edit files over SFTP',
-  sub_approvals:'Destructive operations waiting for a human',sub_mcp:'Connect Claude, Cursor and other MCP clients',sub_settings:'Limits, timeouts and admin password',sub_audit:'Everything that happened, newest first',
+  sub_approvals:'Destructive operations waiting for a human',sub_mcp:'Connect Claude, Gemini, ChatGPT, Cursor and other MCP clients',sub_settings:'Limits, timeouts and admin password',sub_audit:'Everything that happened, newest first',
   login:'Sign in',loginSub:'SSH MCP control panel',password:'Password',showPw:'Show password',hidePw:'Hide password',totalServers:'Servers',connected:'Connected',failed:'Failed',pendingKeys:'Host keys to approve',pendingConf:'Pending approvals',cmds24:'Commands · 24h',
   recent:'Recent activity',perServer:'Server status',lastConn:'Last connection',never:'never',addServer:'Add server',edit:'Edit',del:'Delete',test:'Test',connect:'Connect',disconnect:'Disconnect',
   makeDefault:'Make default',default:'Default',name:'Name',host:'Host',port:'Port',username:'Username',auth:'Auth method',pwd:'Password',key:'Private key',passphrase:'Key passphrase',
@@ -35,7 +35,7 @@ const I18N = {
   noActivity:'No activity yet',emptyDir:'This folder is empty',emptyDirSub:'Upload a file or create a folder.',noTokens:'No tokens yet — create one below.',
   termHint:'Pick a server, then type a command or tap a quick command.',quick:'Quick commands',listView:'List',gridView:'Grid',actions:'Actions',items:'items',
   folderName:'Folder name',newName:'New name',ok:'OK',saved:'Saved',lines:'lines',noHistory:'No history yet',
-  claudeTitle:'Add to Claude (custom connector)',cfgDesktop:'Claude Desktop',cfgCursor:'Cursor',cfgCode:'Claude Code',headerName:'Request header name',headerValue:'Header value',
+  claudeTitle:'Add to Claude (custom connector)',oauthTitle:'Sign in with OAuth (Gemini, ChatGPT, Claude.ai) — no token needed',cfgDesktop:'Claude Desktop',cfgCursor:'Cursor',cfgCode:'Claude Code',headerName:'Request header name',headerValue:'Header value',
   tokenHint:'Create a token above; it is filled in automatically below.',act_test:'Test',act_connect:'Connect',act_disconnect:'Disconnect',act_default:'Default',
   prefix:'Prefix',authMode:'Auth mode',signedOut:'Signed out',notConfigured:'Admin password is not configured (ADMIN_PASSWORD_HASH secret).',
   autoApprove:'Auto-approve',aa_off:'Off',aa_safe:'Safe',aa_all:'Everything',
@@ -62,7 +62,7 @@ const I18N = {
   reload:'Reload',pwBySecret:'The admin password comes from the ADMIN_PASSWORD_HASH secret, so it cannot be changed here. Create a new hash with npm run hash-password and update the secret (wrangler secret put ADMIN_PASSWORD_HASH).'},
  fa: {overview:'نمای کلی',servers:'سرورها',terminal:'ترمینال',files:'فایل‌ها',approvals:'تأییدها',mcp:'MCP',settings:'تنظیمات',audit:'گزارش رویدادها',logout:'خروج',
   sub_overview:'وضعیت همهٔ سرورها در یک نگاه',sub_servers:'مدیریت سرورها، کلیدهای میزبان و سیاست‌ها',sub_terminal:'اجرای دستور روی سرور',sub_files:'مرور و ویرایش فایل‌ها',
-  sub_approvals:'عملیات مخربی که منتظر تأیید شما هستند',sub_mcp:'اتصال Claude، Cursor و سایر کلاینت‌های MCP',sub_settings:'محدودیت‌ها، مهلت‌ها و رمز مدیر',sub_audit:'همهٔ رویدادها، جدیدترین در بالا',
+  sub_approvals:'عملیات مخربی که منتظر تأیید شما هستند',sub_mcp:'اتصال Claude، Gemini، ChatGPT، Cursor و سایر کلاینت‌های MCP',sub_settings:'محدودیت‌ها، مهلت‌ها و رمز مدیر',sub_audit:'همهٔ رویدادها، جدیدترین در بالا',
   login:'ورود',loginSub:'پنل مدیریت SSH MCP',password:'رمز عبور',showPw:'نمایش رمز',hidePw:'پنهان کردن رمز',totalServers:'سرورها',connected:'متصل',failed:'ناموفق',pendingKeys:'کلید میزبان در انتظار',pendingConf:'تأیید در انتظار',cmds24:'دستورات ۲۴ ساعت اخیر',
   recent:'فعالیت‌های اخیر',perServer:'وضعیت سرورها',lastConn:'آخرین اتصال',never:'هرگز',addServer:'افزودن سرور',edit:'ویرایش',del:'حذف',test:'آزمایش',connect:'اتصال',disconnect:'قطع اتصال',
   makeDefault:'پیش‌فرض کن',default:'پیش‌فرض',name:'نام',host:'میزبان',port:'پورت',username:'نام کاربری',auth:'روش احراز هویت',pwd:'رمز عبور',key:'کلید خصوصی',passphrase:'عبارت عبور کلید',
@@ -86,7 +86,7 @@ const I18N = {
   noActivity:'هنوز فعالیتی ثبت نشده',emptyDir:'این پوشه خالی است',emptyDirSub:'یک فایل بارگذاری کنید یا پوشه بسازید.',noTokens:'هنوز توکنی ندارید — از بالا یکی بسازید.',
   termHint:'یک سرور انتخاب کنید، سپس دستور بنویسید یا روی یکی از دستورهای سریع بزنید.',quick:'دستورهای سریع',listView:'فهرست',gridView:'شبکه',actions:'عملیات',items:'مورد',
   folderName:'نام پوشه',newName:'نام جدید',ok:'تأیید',saved:'ذخیره شد',lines:'خط',noHistory:'هنوز تاریخچه‌ای نیست',
-  claudeTitle:'افزودن به Claude (کانکتور سفارشی)',cfgDesktop:'Claude Desktop',cfgCursor:'Cursor',cfgCode:'Claude Code',headerName:'نام هدر درخواست',headerValue:'مقدار هدر',
+  claudeTitle:'افزودن به Claude (کانکتور سفارشی)',oauthTitle:'اتصال با OAuth (Gemini، ChatGPT، Claude.ai) — بدون توکن',cfgDesktop:'Claude Desktop',cfgCursor:'Cursor',cfgCode:'Claude Code',headerName:'نام هدر درخواست',headerValue:'مقدار هدر',
   tokenHint:'ابتدا از بالا یک توکن بسازید؛ به‌طور خودکار در پایین قرار می‌گیرد.',act_test:'آزمایش',act_connect:'اتصال',act_disconnect:'قطع اتصال',act_default:'پیش‌فرض',
   prefix:'پیشوند',authMode:'حالت احراز هویت',signedOut:'خارج شدید',notConfigured:'رمز مدیر تنظیم نشده است (راز ADMIN_PASSWORD_HASH).',
   autoApprove:'تأیید خودکار',aa_off:'خاموش',aa_safe:'ایمن',aa_all:'همه',
@@ -621,6 +621,18 @@ const STEPS = {
   ['مقدار هدر — کلمهٔ Bearer، یک فاصله و سپس توکن شما:','HVAL'],
   ['روی ',['Add'],' بزنید و سپس ابزارهای این کانکتور را از منوی ابزارهای گفتگو فعال کنید.']]
 };
+const OAUTH_STEPS={
+ en:[['In your AI app add a new MCP server / connector (in Gemini: ',['Settings → Extensions / MCP servers → Add'],').'],
+  ['Paste only this address, with no header or token:','URL'],
+  ['If the app asks for an auth type, choose ',['OAuth'],'. Client ID / secret can be left empty — the app registers itself automatically.'],
+  ['An ',['Authorize MCP access'],' page opens: enter your dashboard admin password and press ',['Approve'],'.'],
+  ['Done. The app shows up in the tokens list above as ',['OAuth · <app name>'],'; press revoke there to cut its access at any time.']],
+ fa:[['در اپ هوش مصنوعی یک سرور MCP / کانکتور جدید اضافه کنید (در Gemini: ',['Settings → Extensions / MCP servers → Add'],').'],
+  ['فقط همین نشانی را بگذارید، بدون هدر و توکن:','URL'],
+  ['اگر نوع احراز هویت پرسید، ',['OAuth'],' را انتخاب کنید. Client ID و Secret را خالی بگذارید؛ اپ خودش ثبت‌نام می‌کند.'],
+  ['صفحهٔ ',['Authorize MCP access'],' باز می‌شود: رمز مدیر پنل را وارد کنید و ',['Approve'],' را بزنید.'],
+  ['تمام. اپ در فهرست توکن‌های بالا با نام ',['OAuth · <نام اپ>'],' دیده می‌شود و هر وقت خواستید با دکمهٔ لغو دسترسی‌اش را قطع کنید.']]
+};
 async function viewMcp(root){
  const url=location.origin+'/mcp';let curTok='';
  root.append(h('div.card',{'data-role':'mcp-url'},h('div.card-h',null,h('h2',null,icon('link'),t('mcpUrl'))),copyRow(url,{big:true,name:'url'})));
@@ -639,6 +651,10 @@ async function viewMcp(root){
  name.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();create();}});
  root.append(h('div.card',null,h('div.card-h',null,h('h2',null,icon('key'),t('tokens'))),h('div.row',null,name,btn('primary','plus',t('newToken'),{'data-action':'create-token',onclick:create})),newBox,
   h('div.mt',null,table([t('name'),t('prefix'),t('created'),t('lastUsed'),''],tb)),tokEmpty));
+ // OAuth (no token): Gemini, ChatGPT, Claude.ai
+ const ool=h('ol.steps');for(const st of OAUTH_STEPS[lang]||OAUTH_STEPS.en){const li=h('li');for(const part of st){
+   if(part==='URL')li.append(copyRow(url,{name:'oauth-url'}));else if(Array.isArray(part))li.append(ltr(part[0],'code'));else li.append(part);}ool.append(li);}
+ root.append(h('div.card',{'data-role':'oauth-steps'},h('div.card-h',null,h('h2',null,icon('lock'),t('oauthTitle'))),ool));
  // Claude custom connector, step by step
  const ol=h('ol.steps');for(const st of STEPS[lang]||STEPS.en){const li=h('li');for(const part of st){
    if(part==='URL')li.append(copyRow(url,{name:'step-url'}));else if(part==='HNAME')li.append(copyRow('Authorization',{name:'header-name'}));else if(part==='HVAL')li.append(hvalRow,h('p.hint',null,t('tokenHint')));
