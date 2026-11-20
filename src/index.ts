@@ -10,6 +10,7 @@ import { jsonRpcError } from './do/mcp-session';
 import { randomToken } from './lib/crypto';
 import { VAZIRMATN_WOFF2_B64 } from './ui/font';
 import { configIssues, describeIssues } from './lib/config';
+import { oauth, resourceMetadataUrl } from './lib/oauth';
 
 let fontBytes: Uint8Array | null = null;
 function vazirmatn(): Uint8Array {
@@ -22,7 +23,7 @@ export { McpSession } from './do/mcp-session';
 
 const app = new Hono<{ Bindings: Env }>();
 
-function securityHeaders(h: Headers, nonce?: string) {
+function securityHeaders(h: Headers, nonce?: string, formAction?: string) {
   h.set(
     'content-security-policy',
     [
@@ -33,7 +34,7 @@ function securityHeaders(h: Headers, nonce?: string) {
       "connect-src 'self'",
       "font-src 'self'",
       "base-uri 'none'",
-      "form-action 'self'",
+      formAction ? `form-action 'self' ${formAction}` : "form-action 'self'",
       "frame-ancestors 'none'",
     ].join('; '),
   );
@@ -50,12 +51,13 @@ function securityHeaders(h: Headers, nonce?: string) {
 app.use('*', async (c, next) => {
   await next();
   const nonce = c.get('cspNonce' as never) as string | undefined;
+  const formAction = c.get('cspFormAction' as never) as string | undefined;
   // Responses from Durable Objects / streams may have immutable headers: rebuild if needed.
   try {
-    securityHeaders(c.res.headers, nonce);
+    securityHeaders(c.res.headers, nonce, formAction);
   } catch {
     const r = new Response(c.res.body, c.res);
-    securityHeaders(r.headers, nonce);
+    securityHeaders(r.headers, nonce, formAction);
     c.res = r;
   }
 });
@@ -71,6 +73,7 @@ app.get('/assets/vazirmatn.woff2', () =>
 app.get('/favicon.ico', () => new Response(null, { status: 204 }));
 app.get('/healthz', (c) => c.json({ ok: true }));
 
+app.route('/', oauth);
 app.route('/api', api);
 
 // ---------------------------------------------------------------- MCP (Streamable HTTP)
@@ -86,7 +89,7 @@ app.all('/mcp', async (c) => {
     const rl = await rateLimit(c.env, `mcpauth:${ip}`, 20, 60);
     await audit(c.env, { actor: 'anonymous', action: 'mcp.auth', outcome: rl.ok ? 'denied' : 'rate_limited', ip });
     const r = jsonRpcError(rl.ok ? 401 : 429, -32001, rl.ok ? 'Unauthorized: missing or invalid bearer token' : 'Too many failed attempts');
-    r.headers.set('www-authenticate', 'Bearer realm="my-ssh-mcp"');
+    r.headers.set('www-authenticate', `Bearer realm="my-ssh-mcp", resource_metadata="${resourceMetadataUrl(req)}"`);
     return r;
   }
   const rl = await rateLimit(c.env, `mcp:${tok.id}`, 300, 60);

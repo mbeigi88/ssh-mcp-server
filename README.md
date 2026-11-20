@@ -48,6 +48,14 @@ then press **Connect** and **Approve** the server's fingerprint. That's it — y
 
 The dashboard shows step-by-step instructions for **Claude**, **Claude Desktop**, **Claude Code** and **Cursor**.
 
+### Sign in with OAuth (Gemini, ChatGPT, Claude.ai and other clients that need standard OAuth)
+
+No token needed: add just the address `https://<your-worker>.workers.dev/mcp`. The app finds the OAuth
+endpoints by itself (MCP authorization spec: protected-resource + authorization-server metadata, dynamic client
+registration, PKCE S256), opens an **Authorize** page, and you approve it with your dashboard admin password.
+Approved apps appear in **MCP → tokens** as `OAuth · <app name>` and can be revoked there.
+Access tokens last 1 hour and refresh automatically for 30 days.
+
 Now just ask: *"Check if my website's server is healthy"* or *"Which Docker containers are running?"*
 
 ## What can the AI do?
@@ -78,7 +86,7 @@ Found a security problem? Please see [SECURITY.md](SECURITY.md).
 
 **Does it cost money?** The project is free. You can start on Cloudflare's free plan; if you hit its limits (each request gets very little CPU time), the Workers paid plan costs $5/month.
 
-**Which AI apps work?** Any app that supports MCP (Model Context Protocol) remote servers, such as Claude, Claude Code and Cursor.
+**Which AI apps work?** Any app that supports MCP (Model Context Protocol) remote servers, such as Claude, Claude Code, Cursor, Gemini and ChatGPT (bearer token or standard OAuth).
 
 **Can I use it without AI?** Yes. The dashboard alone is a complete web SSH client and file manager.
 

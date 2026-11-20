@@ -608,7 +608,12 @@ api.post('/confirmations/:id/token', async (c) => {
 
 api.get('/mcp/tokens', async (c) => {
   const r = await c.env.DB.prepare('SELECT id, name, prefix, created_at, last_used_at, revoked_at FROM mcp_tokens ORDER BY created_at DESC').all();
-  return c.json(r.results);
+  // OAuth grants (Gemini, Claude, ChatGPT, ...) are listed and revoked like tokens.
+  const g = await c.env.DB.prepare(
+    `SELECT 'oauth:' || g.id AS id, 'OAuth · ' || c.client_name AS name, 'oauth' AS prefix, g.created_at, g.last_used_at, g.revoked_at
+     FROM oauth_grants g JOIN oauth_clients c ON c.client_id = g.client_id WHERE g.access_token_hash IS NOT NULL ORDER BY g.created_at DESC LIMIT 200`,
+  ).all().catch(() => ({ results: [] as unknown[] }));
+  return c.json([...g.results, ...r.results]);
 });
 api.post('/mcp/tokens', async (c) => {
   const b = await body(c, z.object({ name: z.string().trim().min(1).max(64) }));
@@ -619,6 +624,13 @@ api.post('/mcp/tokens', async (c) => {
   return c.json({ id, name: b.name, token }, 201);
 });
 api.delete('/mcp/tokens/:id', async (c) => {
+  const tid = c.req.param('id');
+  if (tid.startsWith('oauth:')) {
+    const r = await c.env.DB.prepare('UPDATE oauth_grants SET revoked_at = ? WHERE id = ? AND revoked_at IS NULL').bind(Date.now(), tid.slice(6)).run();
+    if (!r.meta.changes) throw new UserError('grant not found or already revoked', 404);
+    await audit(c.env, { actor: c.get('actor'), action: 'oauth.revoke', detail: { id: tid } });
+    return c.json({ ok: true });
+  }
   const r = await c.env.DB.prepare('UPDATE mcp_tokens SET revoked_at = ? WHERE id = ? AND revoked_at IS NULL').bind(Date.now(), c.req.param('id')).run();
   if (!r.meta.changes) throw new UserError('token not found or already revoked', 404);
   await audit(c.env, { actor: c.get('actor'), action: 'mcp.token_revoke', detail: { id: c.req.param('id') } });

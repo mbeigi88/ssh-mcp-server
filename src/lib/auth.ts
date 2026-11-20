@@ -2,6 +2,7 @@ import type { Env } from '../env';
 import { b64urlDecode, hmacHex, randomToken, sha256Hex, timingSafeEqualStr, verifyPassword } from './crypto';
 import { getSecretSetting, getSettings } from './db';
 import { sessionSecretProblem } from './config';
+import { OAUTH_ACCESS_PREFIX, verifyOAuthAccessToken } from './oauth';
 
 export const SESSION_COOKIE = '__Host-sshmcp_session';
 export const SESSION_COOKIE_DEV = 'sshmcp_session';
@@ -133,6 +134,7 @@ export async function verifyMcpBearer(env: Env, req: Request): Promise<{ id: str
   const h = req.headers.get('authorization') ?? '';
   const m = /^Bearer\s+(\S+)$/i.exec(h);
   if (!m || !m[1].startsWith(MCP_TOKEN_PREFIX) || m[1].length > 200) return null;
+  if (m[1].startsWith(OAUTH_ACCESS_PREFIX)) return verifyOAuthAccessToken(env, m[1]);
   const hash = await hashMcpToken(m[1]);
   const row = await env.DB.prepare('SELECT id, name FROM mcp_tokens WHERE token_hash = ? AND revoked_at IS NULL').bind(hash).first<{ id: string; name: string }>();
   if (!row) return null;
