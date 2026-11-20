@@ -349,6 +349,7 @@ oauth.post('/oauth/register', async (c) => {
 async function parseAuthz(c: C, src: Record<string, string | undefined>) {
   const client = await getClient(c.env, src.client_id);
   if (!client) return { fatal: 'Unknown client_id. Remove the server from your MCP client and add it again so it can re-register.' } as const;
+  if ((src.state ?? '').length > 16384 || (src.resource ?? '').length > 2000) return { fatal: 'state or resource parameter is too long.' } as const;
   const registered: string[] = JSON.parse(client.redirect_uris);
   let redirect = src.redirect_uri ?? '';
   if (!redirect && registered.length === 1) redirect = registered[0];
@@ -356,10 +357,10 @@ async function parseAuthz(c: C, src: Record<string, string | undefined>) {
   const params: AuthzParams = {
     client_id: client.client_id,
     redirect_uri: redirect,
-    state: (src.state ?? '').slice(0, 1000),
+    state: src.state ?? '',
     code_challenge: src.code_challenge ?? '',
     scope: SCOPE,
-    resource: (src.resource ?? '').slice(0, 500),
+    resource: src.resource ?? '',
   };
   return { client, params } as const;
 }
