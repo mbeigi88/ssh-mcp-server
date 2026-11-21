@@ -5,7 +5,7 @@
 Talk to your server in plain language: *"How much disk space is left?"*, *"Restart nginx"*, *"Show me the last Docker logs"*.
 Your AI assistant does it over SSH, and anything risky waits for **your** approval first.
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/robamad1396-dev/cf-ssh-mcp)
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/mbeigi88/ssh-mcp-server)
 
 ![Terminal in the dashboard](test/e2e/screenshots/07-terminal-desktop.png)
 

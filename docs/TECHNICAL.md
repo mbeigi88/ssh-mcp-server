@@ -19,7 +19,7 @@ Pick one of three ways. All of them end with the same [first-run setup](#first-r
 
 ### A. Deploy to Cloudflare button (easiest, works from a phone)
 
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/robamad1396-dev/cf-ssh-mcp)
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/mbeigi88/ssh-mcp-server)
 
 1. Tap the button and sign in to Cloudflare (a free account is enough to start; see [limits](#2-limits-that-apply-verified-november-2026)).
 2. Connect GitHub / GitLab when asked — Cloudflare copies this repository into **your** account and builds it from there.
@@ -54,7 +54,7 @@ printed), and no admin password is ever created or printed in CI — you create 
 ### C. Local command line
 
 ```bash
-git clone https://github.com/robamad1396-dev/cf-ssh-mcp && cd cf-ssh-mcp
+git clone https://github.com/mbeigi88/ssh-mcp-server && cd ssh-mcp-server
 npm ci                        # also patches ssh2 for Workers (postinstall)
 npx wrangler login            # or export CLOUDFLARE_API_TOKEN=… CLOUDFLARE_ACCOUNT_ID=…
 npm run deploy:full           # = bash scripts/deploy.sh

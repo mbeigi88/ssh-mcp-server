@@ -5,7 +5,7 @@ This project gives whoever controls the dashboard or an MCP token **shell access
 ## Reporting a vulnerability
 
 Please report vulnerabilities privately via GitHub: **Security → Report a vulnerability** on this repository
-(https://github.com/robamad1396-dev/cf-ssh-mcp/security/advisories/new). Do not open a public issue. You should get an answer within a few days.
+(https://github.com/mbeigi88/ssh-mcp-server/security/advisories/new). Do not open a public issue. You should get an answer within a few days.
 
 ## Operating it safely
 
